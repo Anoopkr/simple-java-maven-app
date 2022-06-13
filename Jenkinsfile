@@ -9,8 +9,9 @@ pipeline {
      environment {
         TEST_VER="123"
         VIVARIUM="/tools/pancake"
-    }
-    stage ("Downstream") {
+    }  
+    stages {
+          stage ("Downstream") {
             steps {
                 script {
                     def down = build job: "down"
@@ -19,7 +20,6 @@ pipeline {
                 }
             }
         }
-    stages {
         stage('build') {
             steps {
                 sh 'mvn --version'
