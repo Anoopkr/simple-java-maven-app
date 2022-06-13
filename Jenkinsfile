@@ -1,3 +1,9 @@
+@NonCPS
+def makeEnvAvailable() {
+    // Goes through every environment variable and sets it again
+    // This will populate 'downstreamBuild.getBuildVariables()'
+    env.getEnvironment().each { k,v -> env.setProperty(k, v)  }
+}
 pipeline {
     agent { docker { image 'maven:3.8.4-openjdk-11-slim' } }
      environment {
