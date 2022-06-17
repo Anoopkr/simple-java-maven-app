@@ -12,15 +12,18 @@ pipeline {
                  
                     sh 'mvn -B -DskipTests clean package'
                     
-                    currentBuildNum = $BUILD_NUMBER
+                    currentBuildNum = BUILD_NUMBER
+                    echo "BUILD_NUMBER: ${BUILD_NUMBER}"
+                    echo "currentBuildNum: ${currentBuildNum}"
                     while(currentBuildNum){
-                        logUrl = 'http://192.168.0.22:8080/job/test/${currentBuildNum}/consoleText'
+                        logUrl = "http://192.168.0.22:8080/job/test/${currentBuildNum}/consoleText"
                         def log = sh(script: 'curl -u ${JENKINS_AUTH} -k ' + logUrl, returnStdout: true).trim()
-                        def temp = log.contains('1.0-SNAPSHOT')
+                        def temp = log.contains('1.1-SNAPSHOT')
                         echo "SAME RELEASE: ${temp}"
                         if(temp){
-                            sh """curl -u admin:password -s 'http://192.168.0.22:8080/job/test/${currentBuildNum}/api/xml?wrapper=changes&xpath=//changeSet//comment' >> x.txt"""
-                            currentBuildNum = currentBuildNum - 1
+                            sh "curl -u admin:password -s 'http://192.168.0.22:8080/job/test/${currentBuildNum}/api/xml?wrapper=changes&xpath=//changeSet//comment' >> x.txt"
+                            currentBuildNum = currentBuildNum.toInteger() - 1
+                            echo "currentBuildNum: ${currentBuildNum}"
                         } else {
                             currentBuildNum = 0
                         } 
