@@ -16,55 +16,34 @@ pipeline {
         script {
           echo "VERSION: ${VERSION}"
           sh 'mvn -B -DskipTests clean package'
-
-          Jenkins.instance.getItem("test").any {
+            def changeLog = ""
+          Jenkins.instance.getItem("test").each {
 
             def jobBuilds = it.getBuilds()
 
-            jobBuilds.any {
-              build ->
-                def currentStatus = build.buildStatusSummary.message
-              def log = build.log              
-              // def changeLogSets = build.changeSets.items.msg
-              if ((build.result == null || currentStatus.contains("stable") || currentStatus.contains("normal"))) {
-		      def isCurrentBuild = log.contains("Building my-app-test-1 ${VERSION}")
-		      if(isCurrentBuild){
-			      build.changeSets.items.each {
-				  item ->
-				    print item.msg
-				}
-		      } else {
-			      
-			      print "EXIT"
-			      return
-		      }
-			
-              }
+            for(def build : jobBuilds) { // this may need some tweaking depending on types
+                  def currentStatus = build.buildStatusSummary.message
+                  def log = build.log              
+                  // def changeLogSets = build.changeSets.items.msg
+                  if ((build.result == null || currentStatus.contains("stable") || currentStatus.contains("normal"))) {
+                      print build.number
+        		      def isCurrentBuild = log.contains("Building my-app-test-1 ${VERSION}")
+        		      if(isCurrentBuild){
+        			      build.changeSets.items.each {
+        				  item ->
+        				    print item.msg
+        				    changeLog = changeLog + "\n" + item.msg
+        				}
+        		      } else {
+        			      
+        			      print "EXIT"
+        			      break;
+        			      
+        		      }
+                }
             }
-            echo "Outer Loop 2"
+            echo "changeLog: ${changeLog}"
           }
-          echo "Outer Loop 2"
-
-          // currentBuildNum = BUILD_NUMBER
-          // echo "BUILD_NUMBER: ${BUILD_NUMBER}"
-          // echo "currentBuildNum: ${currentBuildNum}"
-          // while(currentBuildNum){
-          //     logUrl = "http://192.168.0.22:8080/job/test/${currentBuildNum}/consoleText"
-          //     def log = sh(script: 'curl -u ${JENKINS_AUTH} -k ' + logUrl, returnStdout: true).trim()
-          //     def temp = log.contains("my-app-test-1 ${VERSION}")
-          //     echo "SAME RELEASE: ${temp}"
-          //     if(temp){
-          //         sh "curl -u admin:password -s 'http://192.168.0.22:8080/job/test/${currentBuildNum}/api/xml?wrapper=changes&xpath=//changeSet//comment' >> x.txt"
-          //         currentBuildNum = currentBuildNum.toInteger() - 1
-          //         echo "currentBuildNum: ${currentBuildNum}"
-          //     } else {
-          //         currentBuildNum = 0
-          //     } 
-          // }    
-          // // sh 'cat x.txt'
-          // def varsFile = "x.txt"
-          // def content = readFile varsFile
-          // echo "content RELEASE: ${content}"
         }
 
       }
