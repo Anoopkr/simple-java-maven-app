@@ -22,9 +22,7 @@ pipeline {
             				def log = build.log
             				def isCurrentBuild = log.contains("Building my-app-test-1 ${VERSION}")
 				            // def changeLogSets = build.changeSets.items.msg
-                            echo "isCurrentBuild: ${isCurrentBuild}" 
                             if((build.result == null || currentStatus.contains("stable") || currentStatus.contains("normal")) && isCurrentBuild){
-                                echo "INSIDE" 
                                 build.changeSets.items.each{item ->
                                     print item.msg
                                 }
