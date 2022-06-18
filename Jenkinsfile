@@ -17,11 +17,11 @@ pipeline {
           echo "VERSION: ${VERSION}"
           sh 'mvn -B -DskipTests clean package'
 
-          Jenkins.instance.getItem("test").each {
+          Jenkins.instance.getItem("test").any {
 
             def jobBuilds = it.getBuilds()
 
-            jobBuilds.each {
+            jobBuilds.any {
               build ->
                 def currentStatus = build.buildStatusSummary.message
               def log = build.log              
