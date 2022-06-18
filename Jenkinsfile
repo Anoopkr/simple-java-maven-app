@@ -34,12 +34,16 @@ pipeline {
 				    print item.msg
 				}
 		      } else {
+			      
 			      print "EXIT"
+			      return
 		      }
 			
               }
             }
+            echo "Outer Loop 2"
           }
+          echo "Outer Loop 2"
 
           // currentBuildNum = BUILD_NUMBER
           // echo "BUILD_NUMBER: ${BUILD_NUMBER}"
