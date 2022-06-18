@@ -24,10 +24,10 @@ pipeline {
             jobBuilds.each {
               build ->
                 def currentStatus = build.buildStatusSummary.message
-              def log = build.log
-              def isCurrentBuild = log.contains("Building my-app-test-1 ${VERSION}")
+              def log = build.log              
               // def changeLogSets = build.changeSets.items.msg
               if ((build.result == null || currentStatus.contains("stable") || currentStatus.contains("normal"))) {
+		      def isCurrentBuild = log.contains("Building my-app-test-1 ${VERSION}")
 		      if(isCurrentBuild){
 			      build.changeSets.items.each {
 				  item ->
